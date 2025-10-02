@@ -9,6 +9,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 40px; background: #ecf0f1; color: #34495e; line-height: 1.6; }
         h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
         h2 { color: #2980b9; }
+        h3 { color: #34495e; margin-top: 25px; border-bottom: 1px dashed #ccc; padding-bottom: 5px;}
         
         /* Bloques de código (pre/code) */
         pre, code { 
@@ -35,7 +36,8 @@
             border: 1px solid #f5c6cb;
             padding: 15px;
             border-radius: 5px;
-            margin-top: 20px;
+            margin-top: 15px;
+            margin-bottom: 15px;
         }
         
         /* Botón de descarga */
@@ -60,7 +62,7 @@
 </head>
 <body>
     <h1>Cómo convertir un archivo .py a .exe y crear un instalador</h1>
-    <p>Guía paso a paso para compilar tu aplicación Python (con GUI) en un ejecutable de Windows usando **PyInstaller** y generar un instalador con **Inno Setup**.</p>
+    <p>Guía paso a paso y detallada para compilar tu aplicación Python (con GUI) en un ejecutable de Windows usando **PyInstaller** y generar un instalador con **Inno Setup**.</p>
     
     <section class="step">
         <h2>Paso 1: Código de ejemplo (Calculadora simple)</h2>
@@ -121,34 +123,78 @@ ventana.mainloop()</code></pre>
     </section>
 
     <section class="step">
-        <h2>Paso 2: Instalar PyInstaller</h2>
-        <p>Abre tu terminal o CMD y ejecuta:</p>
+        <h2>Paso 2: Instalar y Verificar PyInstaller</h2>
+        <p>Abre tu terminal o CMD y ejecuta la instalación:</p>
         <pre><code>pip install pyinstaller</code></pre>
+        <h3>Verificación:</h3>
+        <p>Asegúrate de que la instalación fue exitosa ejecutando el comando de versión. Si ves un número de versión, estás listo:</p>
+        <pre><code>pyinstaller --version</code></pre>
     </section>
 
     <section class="step">
-        <h2>Paso 3: Convertir el .py en .exe</h2>
-        <p>En la terminal, ubícate en la carpeta donde está <strong>calculadora.py</strong> y ejecuta el comando de compilación (usamos <code>--noconsole</code> para evitar la ventana de comandos):</p>
-        <pre><code>pyinstaller --onefile --noconsole calculadora.py</code></pre>
+        <h2>Paso 3: Personalización Avanzada y Conversión (.py a .exe)</h2>
+        <p>Para aplicaciones de producción, rara vez usarás solo el comando básico. A continuación, se detallan las opciones más importantes que puedes agregar al comando <code>pyinstaller</code>:</p>
+
+        <h3>Opciones Fundamentales para el EXE</h3>
+        <p>Este es el comando que usaremos para compilar la calculadora:</p>
+        <pre><code>pyinstaller --onefile --noconsole --icon=calculadora.ico calculadora.py</code></pre>
+        
         <ul>
-            <li>Esto creará una carpeta <strong>dist</strong> con el ejecutable <strong>calculadora.exe</strong>.</li>
+            <li><strong><code>--onefile</code>:</strong> Crea un **único archivo ejecutable (.exe)**. Esto es ideal para la distribución, ya que el usuario solo ve un archivo. (El inconveniente es que tarda un poco más en arrancar).</li>
+            <li><strong><code>--noconsole</code> o <code>-w</code>:</strong> **Oculta la ventana de la consola (CMD)**. Es esencial para aplicaciones con interfaz gráfica (GUI) como las hechas con Tkinter o PyQt, ya que no queremos que el usuario vea una ventana negra.</li>
+            <li><strong><code>--icon=FICHERO.ico</code> o <code>-i FICHERO.ico</code>:</strong> **Añade un icono al ejecutable**. Necesitas un archivo con la extensión **`.ico`**. Si no especificas la ruta, PyInstaller usará un icono genérico de Python.</li>
         </ul>
+
+        <h3>Añadir Archivos de Datos (Imágenes, Bases de Datos, etc.)</h3>
+        <p>Si tu script necesita acceder a archivos externos (como imágenes, archivos de configuración o una base de datos SQLite), debes decirle a PyInstaller que los incluya en el paquete. Para ello, se usa la bandera <code>--add-data</code>:</p>
+        
+        <p><strong>Sintaxis General:</strong></p>
+        <pre><code>--add-data "ruta_origen;nombre_carpeta_destino"</code></pre>
+
+        <p><strong>Ejemplo (Windows):</strong> Si tu código usara una imagen llamada <code>logo.png</code>:</p>
+        <pre><code>pyinstaller --onefile calculadora.py --add-data "logo.png;."</code></pre>
+        <p>Esto copia <code>logo.png</code> al directorio raíz del ejecutable empaquetado (el punto <code>.</code> indica el directorio raíz).</p>
+
+        <p><strong>Cómo Acceder al archivo en tu código Python:</strong></p>
+        <p>Cuando un script se ejecuta dentro de un EXE de PyInstaller, la ruta de los archivos cambia. Debes usar la biblioteca <code>sys</code> para obtener la ruta correcta en tiempo de ejecución. Debes agregar este código al inicio de tu script Python:</p>
+        <pre><code>import sys
+import os
+
+def resource_path(relative_path):
+    """Obtiene la ruta absoluta al recurso para PyInstaller."""
+    try:
+        # PyInstaller crea una carpeta temporal y guarda la ruta en _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+# Ejemplo de uso:
+# ruta_logo = resource_path('logo.png')
+</code></pre>
+
+        <h3>Resultado del Paso:</h3>
+        <p>Ejecuta tu comando con las opciones deseadas (por ejemplo, el comando del principio de este paso). El ejecutable <strong>calculadora.exe</strong> se encontrará en la nueva carpeta **`dist`**.</p>
     </section>
 
     <section class="step">
         <h2>Paso 4: (Opcional) Crear un instalador con Inno Setup</h2>
         <ol>
             <li>Descarga e instala Inno Setup desde <a href="https://jrsoftware.org/isinfo.php" target="_blank" rel="noopener noreferrer">aquí</a>.</li>
-            <li>Crea un script básico como este (<strong>setup.iss</strong>) en la raíz del proyecto:</li>
+            <li>Crea un script básico como este (<strong>setup.iss</strong>) en la raíz del proyecto. Asegúrate de que el icono del instalador esté incluido si creaste uno:</li>
         </ol>
         <pre><code>; Script de ejemplo para Inno Setup
 [Setup]
-AppName=CalculadoraSimple
+AppName=Calculadora Simple
 AppVersion=1.0.0
 DefaultDirName={autopf}\CalculadoraSimple
 OutputDir=.\InstallerOutput
+; Si tienes un icono, puedes ponerlo aquí
+SetupIconFile=calculadora.ico 
 
 [Files]
+; Source apunta al EXE generado por PyInstaller
 Source: "dist\calculadora.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
@@ -156,40 +202,43 @@ Name: "{autodesktop}\Calculadora Simple"; Filename: "{app}\calculadora.exe"
 </code></pre>
         <ol start="3">
             <li>Abre el script en Inno Setup y haz clic en “Compile”.</li>
-            <li>¡Listo! Obtendrás el instalador en la carpeta `InstallerOutput`.</li>
+            <li>¡Listo! El instalador se generará en la carpeta `InstallerOutput`.</li>
         </ol>
     </section>
 
     <section class="step">
-        <h2>⚠️ Solución de Errores y Verificación de PyInstaller</h2>
-        <p>Si la instalación en el **Paso 2** falló, revisa los siguientes problemas comunes.</p>
+        <h2>⚠️ Solución de Errores Comunes al Instalar PyInstaller</h2>
+        <p>Si la instalación en el **Paso 2** falló, revisa los siguientes problemas comunes en detalle:</p>
 
         <h3>1. Error: <code>pip</code> no se reconoce (Problema de PATH)</h3>
         <p class="alert-box">
-            Si recibes <strong>'pip' is not recognized...</strong> o <strong>pip: command not found</strong>, significa que el sistema no sabe dónde está la herramienta <code>pip</code>.
+            Si recibes <strong>'pip' is not recognized...</strong> (Windows) o <strong>pip: command not found</strong> (Linux/macOS), el problema es que el sistema operativo no puede localizar la herramienta <code>pip</code> o los comandos de Python/PyInstaller.
         </p>
-        <h4>Solución:</h4>
+        <h4>Solución Detallada:</h4>
         <ul>
-            <li><strong>Windows:</strong> Probablemente olvidaste marcar la casilla **"Add Python to PATH"** durante la instalación de Python. La solución ideal es reinstalar Python marcando esa opción.</li>
-            <li><strong>Linux/macOS:</strong> A veces se necesita usar el gestor de paquetes de la versión específica de Python. Prueba: <pre><code>pip3 install pyinstaller</code></pre></li>
+            <li><strong>Windows:</strong> Esto ocurre si no marcaste la casilla **"Add Python to PATH"** durante la instalación. Debes añadir manualmente las rutas de Python y la carpeta de Scripts a las variables de entorno o, de forma más simple, reinstalar Python marcando la opción.</li>
+            <li><strong>Entornos con múltiples Pythons:</strong> Si tienes Python 2 y 3 instalados, el comando principal `pip` podría apuntar a la versión incorrecta. Usa el comando específico: <pre><code>pip3 install pyinstaller</code></pre></li>
         </ul>
 
-        <h3>2. Error: Permisos Denegados</h3>
+        <h3>2. Error: Permisos Denegados (`Permission denied`)</h3>
         <p class="alert-box">
-            Si recibes un error de **Permission denied**, `pip` está intentando escribir en una carpeta protegida por el sistema operativo.
+            Si recibes un error de **Permission denied** o **Could not install packages due to an EnvironmentError**, significa que estás intentando instalar en un directorio del sistema protegido (como `/usr/local/` o `C:\Program Files`).
         </p>
-        <h4>Solución:</h4>
+        <h4>Solución Detallada:</h4>
         <ul>
-            <li><strong>Recomendado (Usuarios):</strong> Instala PyInstaller solo para tu usuario (no requiere permisos de administrador): <pre><code>pip install --user pyinstaller</code></pre></li>
-            <li><strong>Alternativa (Admin):</strong> Ejecuta la terminal **como administrador** (Windows) o usa `sudo` (Linux/macOS): <pre><code>sudo pip install pyinstaller</code></pre></li>
+            <li><strong>Opción recomendada (Instalación de Usuario):</strong> Instala PyInstaller solo para tu usuario. Este método no requiere permisos de administrador y es la mejor práctica: <pre><code>pip install --user pyinstaller</code></pre></li>
+            <li><strong>Opción de Administrador:</strong> Ejecuta la terminal **como administrador** (en Windows) o usa `sudo` (en Linux/macOS) antes del comando: <pre><code>sudo pip install pyinstaller</code></pre></li>
         </ul>
 
-        <hr>
-
-        <h3>✅ Comprobar que PyInstaller está instalado</h3>
-        <p>Después de cualquier instalación exitosa, verifica que el comando esté disponible ejecutando:</p>
-        <pre><code>pyinstaller --version</code></pre>
-        <p>Si la instalación fue correcta, la terminal mostrará el número de versión (ej: <code>5.13.0</code>). Si falla, debes solucionar los errores de PATH (punto 1) primero.</p>
+        <h3>3. Error: Versión de Python Incompatible o Versión Antigua de `pip`</h3>
+        <p class="alert-box">
+            Si ves errores como **Could not find a version that satisfies the requirement pyinstaller** o problemas con la compilación de ruedas (`wheel`), tu `pip` está obsoleto o la versión de Python es muy antigua.
+        </p>
+        <h4>Solución Detallada:</h4>
+        <ul>
+            <li>**Actualizar `pip`:** Siempre es una buena práctica actualizar el gestor de paquetes antes de instalar: <pre><code>python -m pip install --upgrade pip</code></pre></li>
+            <li>**Versión de Python:** Asegúrate de usar una versión de Python moderna (3.8+). Si tu versión es muy antigua, PyInstaller podría no soportarla.</li>
+        </ul>
     </section>
     
     <hr>
@@ -197,7 +246,7 @@ Name: "{autodesktop}\Calculadora Simple"; Filename: "{app}\calculadora.exe"
     <h2>Resumen</h2>
     <ol>
         <li>Escribe el script Python (<strong>calculadora.py</strong>).</li>
-        <li>Compílalo con PyInstaller (<strong>pyinstaller --onefile --noconsole calculadora.py</strong>).</li>
+        <li>**Personaliza** el ejecutable: **`pyinstaller --onefile --noconsole --icon=calculadora.ico calculadora.py`**.</li>
         <li>Usa Inno Setup para crear el instalador.</li>
     </ol>
 
