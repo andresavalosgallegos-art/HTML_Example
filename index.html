@@ -1,34 +1,67 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Convertir .py a .exe con PyInstaller e InnoSetup</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
-    h1, h2, h3 { color: #2c3e50; }
-    pre, code { background: #eaeaea; padding: 8px; border-radius: 4px; }
-    .step { margin: 20px 0; }
-    .download-btn {
-      display: inline-block;
-      background: #2980b9;
-      color: #fff;
-      padding: 10px 22px;
-      border-radius: 5px;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 10px 0;
-      transition: background 0.2s;
-    }
-    .download-btn:hover { background: #1a5276; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertir .py a .exe con PyInstaller e InnoSetup</title>
+    <style>
+        /* Ajuste de colores para mejor contraste y modernidad */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 40px; background: #ecf0f1; color: #34495e; line-height: 1.6; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2, h3 { color: #2980b9; }
+        
+        /* Estilos para bloques de código */
+        pre, code { 
+            background: #eef1f4; 
+            padding: 15px; 
+            border-radius: 6px; 
+            overflow-x: auto; /* Permite desplazamiento horizontal en pantallas pequeñas */
+            font-family: 'Consolas', 'Monaco', monospace; 
+            font-size: 0.95em;
+            display: block; /* Asegura que 'pre' o 'code' ocupen su propia línea */
+        }
+        
+        .step { 
+            margin: 40px 0; 
+            padding: 20px; 
+            border-left: 5px solid #3498db; /* Indicador visual del paso */
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        /* Botón de descarga */
+        .download-btn {
+            display: inline-block;
+            background: #27ae60; /* Color verde/éxito */
+            color: #fff;
+            padding: 12px 25px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 15px 0;
+            transition: background 0.3s ease;
+        }
+        .download-btn:hover { background: #229954; }
+
+        /* Estilos para listas */
+        ul, ol { padding-left: 20px; }
+        li { margin-bottom: 8px; }
+
+        /* Media Query para pantallas pequeñas */
+        @media (max-width: 600px) {
+            body { padding: 20px; }
+            pre, code { font-size: 0.9em; }
+        }
+    </style>
 </head>
 <body>
-  <h1>Cómo convertir un archivo .py a .exe (y crear un instalador)</h1>
-
-  <h2>Paso 1: Código de ejemplo (calculadora simple)</h2>
-  <p>Usaremos el siguiente código en <b>calculadora.py</b>:</p>
-  <pre><code>
-    import tkinter as tk
+    <h1>Cómo convertir un archivo .py a .exe y crear un instalador</h1>
+    <p>Guía paso a paso para compilar tu aplicación Python (con GUI) en un ejecutable de Windows usando **PyInstaller** y generar un instalador con **Inno Setup**.</p>
+    
+    <section class="step">
+        <h2>Paso 1: Código de ejemplo (Calculadora simple)</h2>
+        <p>Usaremos el siguiente código Python, guárdalo como <strong>calculadora.py</strong>:</p>
+        <pre><code>import tkinter as tk
 from tkinter import messagebox
 
 def click_boton(valor):
@@ -41,7 +74,9 @@ def limpiar():
 
 def calcular():
     try:
-        resultado = eval(entrada.get())
+        # Nota: Usar eval() puede ser peligroso con entradas no controladas. 
+        # Para un ejemplo simple está bien.
+        resultado = eval(entrada.get()) 
         entrada.delete(0, tk.END)
         entrada.insert(0, str(resultado))
     except:
@@ -79,57 +114,72 @@ for boton in botones:
 tk.Button(ventana, text="C", width=22, height=2, font=("Arial", 18), command=limpiar).grid(row=5, column=0, columnspan=4, padx=5, pady=5)
 
 ventana.mainloop()
-  </code></pre>
+</code></pre>
 
-  <a href="calculadora.py" download class="download-btn">Descargar calculadora.py</a>
+        <a href="calculadora.py" download class="download-btn" aria-label="Descargar el código Python de la calculadora.">Descargar calculadora.py</a>
+    </section>
 
-  <div class="step">
-    <h2>Paso 2: Instalar PyInstaller</h2>
-    <p>Abre tu terminal o CMD y ejecuta:</p>
-    <pre><code>pip install pyinstaller</code></pre>
-  </div>
+    <section class="step">
+        <h2>Paso 2: Instalar PyInstaller</h2>
+        <p>Abre tu terminal (CMD, PowerShell o Bash) y ejecuta el siguiente comando para instalar PyInstaller:</p>
+        <pre><code>pip install pyinstaller</code></pre>
+    </section>
 
-  <div class="step">
-    <h2>Paso 3: Convertir el .py en .exe</h2>
-    <p>En la terminal, ubícate en la carpeta donde está <b>calculadora.py</b> y ejecuta:</p>
-    <pre><code>pyinstaller --onefile calculadora.py</code></pre>
-    <ul>
-      <li>Esto creará una carpeta <b>dist</b> con el ejecutable <b>calculadora.exe</b>.</li>
-    </ul>
-  </div>
+    <section class="step">
+        <h2>Paso 3: Convertir el .py en .exe</h2>
+        <p>En la terminal, navega hasta la carpeta donde guardaste <strong>calculadora.py</strong> y ejecuta el comando de compilación:</p>
+        <pre><code>pyinstaller --onefile --noconsole calculadora.py</code></pre>
+        <ul>
+            <li>La bandera **`--onefile`** empaqueta todo en un solo ejecutable.</li>
+            <li>La bandera **`--noconsole`** evita que se abra la ventana de la terminal detrás de la GUI.</li>
+            <li>El ejecutable **`calculadora.exe`** se encontrará en la nueva carpeta **`dist`** que se creará.</li>
+        </ul>
+    </section>
 
-  <div class="step">
-    <h2>Paso 4: (Opcional) Crear un instalador con Inno Setup</h2>
-    <ol>
-      <li>Descarga e instala Inno Setup desde <a href="https://jrsoftware.org/isinfo.php" target="_blank">aquí</a>.</li>
-      <li>Crea un script básico como este (<b>setup.iss</b>):</li>
-    </ol>
-    <pre><code>; Script de ejemplo para Inno Setup
+    <section class="step">
+        <h2>Paso 4: (Opcional) Crear un instalador con Inno Setup</h2>
+        <ol>
+            <li>Descarga e instala **Inno Setup** desde el sitio oficial: <a href="https://jrsoftware.org/isinfo.php" target="_blank" rel="noopener noreferrer">jrsoftware.org/isinfo.php</a>.</li>
+            <li>Crea un script de instalación (guárdalo como **setup.iss**) en la raíz de tu proyecto. Asegúrate de que apunte correctamente al archivo dentro de la carpeta `dist`:</li>
+        </ol>
+        <pre><code>; Script de ejemplo para Inno Setup
 [Setup]
-AppName=CalculadoraSimple
-AppVersion=1.0
-DefaultDirName={pf}\CalculadoraSimple
+AppName=Calculadora Simple
+AppVersion=1.0.0
+Publisher=Tu Nombre o Empresa
+DefaultDirName={autopf}\Calculadora Simple
+Compression=lzma
+SolidCompression=yes
+OutputDir=.\InstallerOutput ; Directorio donde se guarda el instalador
 
 [Files]
+; Asegúrate de que el Source apunta al .exe creado por PyInstaller
 Source: "dist\calculadora.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{desktop}\Calculadora Simple"; Filename: "{app}\calculadora.exe"
+; Crea un acceso directo en el escritorio y en el menú de inicio
+Name: "{group}\Calculadora Simple"; Filename: "{app}\calculadora.exe"
+Name: "{autodesktop}\Calculadora Simple"; Filename: "{app}\calculadora.exe"
+
+[Run]
+Filename: "{app}\calculadora.exe"; Description: "Lanzar Calculadora Simple"; Flags: postinstall skipifsilent
 </code></pre>
-    <ol start="3">
-      <li>Abre el script en Inno Setup y haz clic en “Compile”.</li>
-      <li>¡Listo! Obtendrás un instalador que copia tu EXE a la PC del usuario.</li>
+        <ol start="3">
+            <li>Abre este archivo **`setup.iss`** en Inno Setup y haz clic en el botón **"Compile"**.</li>
+            <li>El instalador final (`setup.exe`) se generará en la carpeta `InstallerOutput` (o el directorio que hayas especificado).</li>
+        </ol>
+    </section>
+
+    <h2>Resumen del Proceso</h2>
+    <ol>
+        <li>Escribe el script Python (<strong>calculadora.py</strong>).</li>
+        <li>Compílalo con PyInstaller: **`pyinstaller --onefile --noconsole calculadora.py`**.</li>
+        <li>Usa Inno Setup para crear el instalador con un script `.iss`.</li>
     </ol>
-  </div>
 
-  <h2>Resumen</h2>
-  <ol>
-    <li>Escribe el script Python (<b>calculadora.py</b>).</li>
-    <li>Compílalo con PyInstaller (<b>pyinstaller --onefile calculadora.py</b>).</li>
-    <li>Usa Inno Setup para crear el instalador.</li>
-  </ol>
-
-  <hr>
-  <p style="font-size: 0.9em; color: #888;">Por: andresavalosgallegos-art | Página generada con GitHub Pages</p>
+    <hr>
+    <p style="font-size: 0.85em; color: #7f8c8d; text-align: center; padding-top: 15px;">
+        Contenido por andresavalosgallegos-art | Generado para fines educativos.
+    </p>
 </body>
 </html>
