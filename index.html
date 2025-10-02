@@ -27,37 +27,59 @@
 
   <h2>Paso 1: Código de ejemplo (calculadora simple)</h2>
   <p>Usaremos el siguiente código en <b>calculadora.py</b>:</p>
-  <pre><code>def suma(a, b):
-    return a + b
+  <pre><code>
+    import tkinter as tk
+from tkinter import messagebox
 
-def resta(a, b):
-    return a - b
+def click_boton(valor):
+    actual = str(entrada.get())
+    entrada.delete(0, tk.END)
+    entrada.insert(0, actual + valor)
 
-def multiplicacion(a, b):
-    return a * b
+def limpiar():
+    entrada.delete(0, tk.END)
 
-def division(a, b):
-    if b == 0:
-        return "No se puede dividir por cero"
-    return a / b
+def calcular():
+    try:
+        resultado = eval(entrada.get())
+        entrada.delete(0, tk.END)
+        entrada.insert(0, str(resultado))
+    except:
+        messagebox.showerror("Error", "Operación inválida")
 
-print("Calculadora simple")
-print("1. Suma\n2. Resta\n3. Multiplicación\n4. División")
-op = input("Elige una opción: ")
+ventana = tk.Tk()
+ventana.title("Calculadora GUI")
+ventana.geometry("300x400")
 
-a = float(input("Primer número: "))
-b = float(input("Segundo número: "))
+entrada = tk.Entry(ventana, width=16, font=("Arial", 24), borderwidth=2, relief="solid", justify="right")
+entrada.grid(row=0, column=0, columnspan=4, padx=10, pady=10)
 
-if op == "1":
-    print("Resultado:", suma(a, b))
-elif op == "2":
-    print("Resultado:", resta(a, b))
-elif op == "3":
-    print("Resultado:", multiplicacion(a, b))
-elif op == "4":
-    print("Resultado:", division(a, b))
-else:
-    print("Opción no válida")</code></pre>
+botones = [
+    "7", "8", "9", "/",
+    "4", "5", "6", "*",
+    "1", "2", "3", "-",
+    "0", ".", "=", "+"
+]
+
+fila = 1
+col = 0
+
+for boton in botones:
+    if boton == "=":
+        tk.Button(ventana, text=boton, width=5, height=2, font=("Arial", 18),
+                  command=calcular).grid(row=fila, column=col, padx=5, pady=5)
+    else:
+        tk.Button(ventana, text=boton, width=5, height=2, font=("Arial", 18),
+                  command=lambda b=boton: click_boton(b)).grid(row=fila, column=col, padx=5, pady=5)
+    col += 1
+    if col > 3:
+        col = 0
+        fila += 1
+
+tk.Button(ventana, text="C", width=22, height=2, font=("Arial", 18), command=limpiar).grid(row=5, column=0, columnspan=4, padx=5, pady=5)
+
+ventana.mainloop()
+  </code></pre>
 
   <a href="calculadora.py" download class="download-btn">Descargar calculadora.py</a>
 
