@@ -2,10 +2,112 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Pinguinos</title>
+  <title>Convertir .py a .exe con PyInstaller e InnoSetup</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+    h1, h2, h3 { color: #2c3e50; }
+    pre, code { background: #eaeaea; padding: 8px; border-radius: 4px; }
+    .step { margin: 20px 0; }
+    .download-btn {
+      display: inline-block;
+      background: #2980b9;
+      color: #fff;
+      padding: 10px 22px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      margin: 10px 0;
+      transition: background 0.2s;
+    }
+    .download-btn:hover { background: #1a5276; }
+  </style>
 </head>
 <body>
-  <h1>¡Hola, pingüinos!</h1>
-  <p>Pinguinescos</p>
+  <h1>Cómo convertir un archivo .py a .exe (y crear un instalador)</h1>
+
+  <h2>Paso 1: Código de ejemplo (calculadora simple)</h2>
+  <p>Usaremos el siguiente código en <b>calculadora.py</b>:</p>
+  <pre><code>def suma(a, b):
+    return a + b
+
+def resta(a, b):
+    return a - b
+
+def multiplicacion(a, b):
+    return a * b
+
+def division(a, b):
+    if b == 0:
+        return "No se puede dividir por cero"
+    return a / b
+
+print("Calculadora simple")
+print("1. Suma\n2. Resta\n3. Multiplicación\n4. División")
+op = input("Elige una opción: ")
+
+a = float(input("Primer número: "))
+b = float(input("Segundo número: "))
+
+if op == "1":
+    print("Resultado:", suma(a, b))
+elif op == "2":
+    print("Resultado:", resta(a, b))
+elif op == "3":
+    print("Resultado:", multiplicacion(a, b))
+elif op == "4":
+    print("Resultado:", division(a, b))
+else:
+    print("Opción no válida")</code></pre>
+
+  <a href="calculadora.py" download class="download-btn">Descargar calculadora.py</a>
+
+  <div class="step">
+    <h2>Paso 2: Instalar PyInstaller</h2>
+    <p>Abre tu terminal o CMD y ejecuta:</p>
+    <pre><code>pip install pyinstaller</code></pre>
+  </div>
+
+  <div class="step">
+    <h2>Paso 3: Convertir el .py en .exe</h2>
+    <p>En la terminal, ubícate en la carpeta donde está <b>calculadora.py</b> y ejecuta:</p>
+    <pre><code>pyinstaller --onefile calculadora.py</code></pre>
+    <ul>
+      <li>Esto creará una carpeta <b>dist</b> con el ejecutable <b>calculadora.exe</b>.</li>
+    </ul>
+  </div>
+
+  <div class="step">
+    <h2>Paso 4: (Opcional) Crear un instalador con Inno Setup</h2>
+    <ol>
+      <li>Descarga e instala Inno Setup desde <a href="https://jrsoftware.org/isinfo.php" target="_blank">aquí</a>.</li>
+      <li>Crea un script básico como este (<b>setup.iss</b>):</li>
+    </ol>
+    <pre><code>; Script de ejemplo para Inno Setup
+[Setup]
+AppName=CalculadoraSimple
+AppVersion=1.0
+DefaultDirName={pf}\CalculadoraSimple
+
+[Files]
+Source: "dist\calculadora.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+[Icons]
+Name: "{desktop}\Calculadora Simple"; Filename: "{app}\calculadora.exe"
+</code></pre>
+    <ol start="3">
+      <li>Abre el script en Inno Setup y haz clic en “Compile”.</li>
+      <li>¡Listo! Obtendrás un instalador que copia tu EXE a la PC del usuario.</li>
+    </ol>
+  </div>
+
+  <h2>Resumen</h2>
+  <ol>
+    <li>Escribe el script Python (<b>calculadora.py</b>).</li>
+    <li>Compílalo con PyInstaller (<b>pyinstaller --onefile calculadora.py</b>).</li>
+    <li>Usa Inno Setup para crear el instalador.</li>
+  </ol>
+
+  <hr>
+  <p style="font-size: 0.9em; color: #888;">Por: andresavalosgallegos-art | Página generada con GitHub Pages</p>
 </body>
 </html>
