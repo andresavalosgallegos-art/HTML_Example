@@ -5,34 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Convertir .py a .exe con PyInstaller e InnoSetup</title>
     <style>
-        /* Ajuste de colores para mejor contraste y modernidad */
+        /* Estilos generales */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 40px; background: #ecf0f1; color: #34495e; line-height: 1.6; }
         h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        h2, h3 { color: #2980b9; }
+        h2 { color: #2980b9; }
         
-        /* Estilos para bloques de código */
+        /* Bloques de código (pre/code) */
         pre, code { 
             background: #eef1f4; 
             padding: 15px; 
             border-radius: 6px; 
-            overflow-x: auto; /* Permite desplazamiento horizontal en pantallas pequeñas */
+            overflow-x: auto;
             font-family: 'Consolas', 'Monaco', monospace; 
             font-size: 0.95em;
-            display: block; /* Asegura que 'pre' o 'code' ocupen su propia línea */
+            display: block;
         }
         
         .step { 
             margin: 40px 0; 
             padding: 20px; 
-            border-left: 5px solid #3498db; /* Indicador visual del paso */
+            border-left: 5px solid #3498db;
             background: #ffffff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .alert-box {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
         }
         
         /* Botón de descarga */
         .download-btn {
             display: inline-block;
-            background: #27ae60; /* Color verde/éxito */
+            background: #27ae60;
             color: #fff;
             padding: 12px 25px;
             border-radius: 5px;
@@ -43,14 +52,9 @@
         }
         .download-btn:hover { background: #229954; }
 
-        /* Estilos para listas */
-        ul, ol { padding-left: 20px; }
-        li { margin-bottom: 8px; }
-
         /* Media Query para pantallas pequeñas */
         @media (max-width: 600px) {
             body { padding: 20px; }
-            pre, code { font-size: 0.9em; }
         }
     </style>
 </head>
@@ -74,8 +78,6 @@ def limpiar():
 
 def calcular():
     try:
-        # Nota: Usar eval() puede ser peligroso con entradas no controladas. 
-        # Para un ejemplo simple está bien.
         resultado = eval(entrada.get()) 
         entrada.delete(0, tk.END)
         entrada.insert(0, str(resultado))
@@ -113,73 +115,93 @@ for boton in botones:
 
 tk.Button(ventana, text="C", width=22, height=2, font=("Arial", 18), command=limpiar).grid(row=5, column=0, columnspan=4, padx=5, pady=5)
 
-ventana.mainloop()
-</code></pre>
+ventana.mainloop()</code></pre>
 
-        <a href="calculadora.py" download class="download-btn" aria-label="Descargar el código Python de la calculadora.">Descargar calculadora.py</a>
+        <a href="calculadora.py" download class="download-btn">Descargar calculadora.py</a>
     </section>
 
     <section class="step">
         <h2>Paso 2: Instalar PyInstaller</h2>
-        <p>Abre tu terminal (CMD, PowerShell o Bash) y ejecuta el siguiente comando para instalar PyInstaller:</p>
+        <p>Abre tu terminal o CMD y ejecuta:</p>
         <pre><code>pip install pyinstaller</code></pre>
     </section>
 
     <section class="step">
         <h2>Paso 3: Convertir el .py en .exe</h2>
-        <p>En la terminal, navega hasta la carpeta donde guardaste <strong>calculadora.py</strong> y ejecuta el comando de compilación:</p>
+        <p>En la terminal, ubícate en la carpeta donde está <strong>calculadora.py</strong> y ejecuta el comando de compilación (usamos <code>--noconsole</code> para evitar la ventana de comandos):</p>
         <pre><code>pyinstaller --onefile --noconsole calculadora.py</code></pre>
         <ul>
-            <li>La bandera **`--onefile`** empaqueta todo en un solo ejecutable.</li>
-            <li>La bandera **`--noconsole`** evita que se abra la ventana de la terminal detrás de la GUI.</li>
-            <li>El ejecutable **`calculadora.exe`** se encontrará en la nueva carpeta **`dist`** que se creará.</li>
+            <li>Esto creará una carpeta <strong>dist</strong> con el ejecutable <strong>calculadora.exe</strong>.</li>
         </ul>
     </section>
 
     <section class="step">
         <h2>Paso 4: (Opcional) Crear un instalador con Inno Setup</h2>
         <ol>
-            <li>Descarga e instala **Inno Setup** desde el sitio oficial: <a href="https://jrsoftware.org/isinfo.php" target="_blank" rel="noopener noreferrer">jrsoftware.org/isinfo.php</a>.</li>
-            <li>Crea un script de instalación (guárdalo como **setup.iss**) en la raíz de tu proyecto. Asegúrate de que apunte correctamente al archivo dentro de la carpeta `dist`:</li>
+            <li>Descarga e instala Inno Setup desde <a href="https://jrsoftware.org/isinfo.php" target="_blank" rel="noopener noreferrer">aquí</a>.</li>
+            <li>Crea un script básico como este (<strong>setup.iss</strong>) en la raíz del proyecto:</li>
         </ol>
         <pre><code>; Script de ejemplo para Inno Setup
 [Setup]
-AppName=Calculadora Simple
+AppName=CalculadoraSimple
 AppVersion=1.0.0
-Publisher=Tu Nombre o Empresa
-DefaultDirName={autopf}\Calculadora Simple
-Compression=lzma
-SolidCompression=yes
-OutputDir=.\InstallerOutput ; Directorio donde se guarda el instalador
+DefaultDirName={autopf}\CalculadoraSimple
+OutputDir=.\InstallerOutput
 
 [Files]
-; Asegúrate de que el Source apunta al .exe creado por PyInstaller
 Source: "dist\calculadora.exe"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-; Crea un acceso directo en el escritorio y en el menú de inicio
-Name: "{group}\Calculadora Simple"; Filename: "{app}\calculadora.exe"
 Name: "{autodesktop}\Calculadora Simple"; Filename: "{app}\calculadora.exe"
-
-[Run]
-Filename: "{app}\calculadora.exe"; Description: "Lanzar Calculadora Simple"; Flags: postinstall skipifsilent
 </code></pre>
         <ol start="3">
-            <li>Abre este archivo **`setup.iss`** en Inno Setup y haz clic en el botón **"Compile"**.</li>
-            <li>El instalador final (`setup.exe`) se generará en la carpeta `InstallerOutput` (o el directorio que hayas especificado).</li>
+            <li>Abre el script en Inno Setup y haz clic en “Compile”.</li>
+            <li>¡Listo! Obtendrás el instalador en la carpeta `InstallerOutput`.</li>
         </ol>
     </section>
 
-    <h2>Resumen del Proceso</h2>
+    <section class="step">
+        <h2>⚠️ Solución de Errores y Verificación de PyInstaller</h2>
+        <p>Si la instalación en el **Paso 2** falló, revisa los siguientes problemas comunes.</p>
+
+        <h3>1. Error: <code>pip</code> no se reconoce (Problema de PATH)</h3>
+        <p class="alert-box">
+            Si recibes <strong>'pip' is not recognized...</strong> o <strong>pip: command not found</strong>, significa que el sistema no sabe dónde está la herramienta <code>pip</code>.
+        </p>
+        <h4>Solución:</h4>
+        <ul>
+            <li><strong>Windows:</strong> Probablemente olvidaste marcar la casilla **"Add Python to PATH"** durante la instalación de Python. La solución ideal es reinstalar Python marcando esa opción.</li>
+            <li><strong>Linux/macOS:</strong> A veces se necesita usar el gestor de paquetes de la versión específica de Python. Prueba: <pre><code>pip3 install pyinstaller</code></pre></li>
+        </ul>
+
+        <h3>2. Error: Permisos Denegados</h3>
+        <p class="alert-box">
+            Si recibes un error de **Permission denied**, `pip` está intentando escribir en una carpeta protegida por el sistema operativo.
+        </p>
+        <h4>Solución:</h4>
+        <ul>
+            <li><strong>Recomendado (Usuarios):</strong> Instala PyInstaller solo para tu usuario (no requiere permisos de administrador): <pre><code>pip install --user pyinstaller</code></pre></li>
+            <li><strong>Alternativa (Admin):</strong> Ejecuta la terminal **como administrador** (Windows) o usa `sudo` (Linux/macOS): <pre><code>sudo pip install pyinstaller</code></pre></li>
+        </ul>
+
+        <hr>
+
+        <h3>✅ Comprobar que PyInstaller está instalado</h3>
+        <p>Después de cualquier instalación exitosa, verifica que el comando esté disponible ejecutando:</p>
+        <pre><code>pyinstaller --version</code></pre>
+        <p>Si la instalación fue correcta, la terminal mostrará el número de versión (ej: <code>5.13.0</code>). Si falla, debes solucionar los errores de PATH (punto 1) primero.</p>
+    </section>
+    
+    <hr>
+
+    <h2>Resumen</h2>
     <ol>
         <li>Escribe el script Python (<strong>calculadora.py</strong>).</li>
-        <li>Compílalo con PyInstaller: **`pyinstaller --onefile --noconsole calculadora.py`**.</li>
-        <li>Usa Inno Setup para crear el instalador con un script `.iss`.</li>
+        <li>Compílalo con PyInstaller (<strong>pyinstaller --onefile --noconsole calculadora.py</strong>).</li>
+        <li>Usa Inno Setup para crear el instalador.</li>
     </ol>
 
     <hr>
-    <p style="font-size: 0.85em; color: #7f8c8d; text-align: center; padding-top: 15px;">
-        Contenido por andresavalosgallegos-art | Generado para fines educativos.
-    </p>
+    <p style="font-size: 0.85em; color: #7f8c8d; text-align: center;">Por: andresavalosgallegos-art | Página generada con GitHub Pages</p>
 </body>
 </html>
